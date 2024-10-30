@@ -19,7 +19,6 @@ const app = express();
 // Middlewares
 app.use(cors({
     origin: 'https://cosyrecipes.netlify.app',
-    credentials: true,
 }));
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
