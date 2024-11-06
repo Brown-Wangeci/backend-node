@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const validator = require("validator");
 const UserModel = require("../models/UserModel");
+const generateToken = require('../utils/GenerateToken')
 
 
 
@@ -32,19 +33,18 @@ const registerUserController = async (req, res) => {
         const newUser = new UserModel({username, password: hashedPassword, email});
         const savedUser = await newUser.save();
 
-        console.log('Before token');
+        
         // Create and send token
         const token = generateToken(savedUser._id);
         
-        console.log('After token');
-        console.log('Before cookie');
+        
         res.cookie("access_token", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "None",
             maxAge: 3 * 24 * 60 * 60 * 1000
         });
-        console.log('After cookie');
+        
 
         res.status(200).json({message: "User registered successfully", token});
 
