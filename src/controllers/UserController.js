@@ -3,6 +3,8 @@ const validator = require("validator");
 const UserModel = require("../models/UserModel");
 const generateToken = require('../utils/GenerateToken')
 
+// Max age of the cookie
+const maxAge = 3 * 24 * 60 * 60 * 1000;
 
 
 const registerUserController = async (req, res) => {
@@ -40,13 +42,13 @@ const registerUserController = async (req, res) => {
         
         res.cookie("access_token", token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
+            secure: true,
             sameSite: "None",
-            maxAge: 3 * 24 * 60 * 60 * 1000
+            maxAge: maxAge
         });
         
 
-        res.status(200).json({message: "User registered successfully", token});
+        res.status(200).json({message: "User registered successfully", user: savedUser._id});
 
     } catch (error) {
         console.error(error.message);
@@ -74,13 +76,13 @@ const loginUserController = async (req, res) => {
 
         res.cookie("access_token", token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
+            secure: true,
             sameSite: "None",
-            maxAge: 3 * 24 * 60 * 60 * 1000
+            maxAge: maxAge
         });
 
 
-        res.status(200).json({message: 'Login successful', token});
+        res.status(200).json({message: 'Login successful', user: user._id});
 
         
     } catch (error) {
