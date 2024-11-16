@@ -21,6 +21,7 @@ const getOneRecipe = async (req, res) => {
 };
 const addRecipe = async (req, res) => {
     const recipe = req.body;
+
     try {
         const createdRecipe = new RecipeModel(recipe);
         await createdRecipe.save();
@@ -30,6 +31,8 @@ const addRecipe = async (req, res) => {
         res.status(500).json(error.message);
     }
 };
+
+
 const editRecipe = async (req, res) => {
     const recipe = req.body;
     const recipeId = req.params.id;
@@ -44,4 +47,22 @@ const editRecipe = async (req, res) => {
 
 
 
-module.exports = {getAllRecipes, getOneRecipe, addRecipe, editRecipe};
+const addMultipleRecipes = async (req, res) => {
+    const recipes = req.body; // Expecting an array of recipe objects
+
+    if (!Array.isArray(recipes)) {
+        return res.status(400).json({ message: 'Input should be an array of recipes' });
+    }
+
+    try {
+        const createdRecipes = await RecipeModel.insertMany(recipes);
+        res.status(201).json(createdRecipes); // Return all created recipes
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ message: 'Failed to add recipes', error: error.message });
+    }
+};
+
+
+
+module.exports = {getAllRecipes, getOneRecipe, addRecipe, editRecipe, addMultipleRecipes};

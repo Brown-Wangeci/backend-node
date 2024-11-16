@@ -7,4 +7,4 @@ const generateToken = (_id) => {
     });
 }
 
-module.exports = generateToken;
+module.exports = { generateToken };

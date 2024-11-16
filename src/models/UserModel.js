@@ -25,8 +25,14 @@ const UserSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Recipe'
         }
+    ],
+    createdrecipes:[
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Recipe'
+        }
     ]
-});
+}, {timestamps: true});
 
 const UserModel = mongoose.model('User', UserSchema);
 module.exports = UserModel;

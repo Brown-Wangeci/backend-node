@@ -1,18 +1,21 @@
 // Require the necessary modules
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const express = require('express');
 const router = express.Router();
+const { verifyToken } = require('../middlewares/AuthMiddleware');
 
 // Require the controller functions
-const { loginUserController, registerUserController} = require('../controllers/UserController');
+const { 
+    loginUserController,
+    registerUserController,
+    addToFavoritesController,
+    getAllFavoritesController
+} = require('../controllers/UserController');
 
 
-router.get('/', (req, res)=>{});
 router.post('/register', registerUserController);
 router.post('/login', loginUserController);
-router.get('/set-cookies', (req, res)=>{});
-router.get('/read-cookies', (req, res)=>{});
+router.post('/favorites', verifyToken, addToFavoritesController);
+router.get('/favorites', verifyToken, getAllFavoritesController);
 
 
 module.exports = router;

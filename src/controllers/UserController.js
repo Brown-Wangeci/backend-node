@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const validator = require("validator");
 const UserModel = require("../models/UserModel");
-const generateToken = require('../utils/GenerateToken')
+const { generateToken } = require('../utils/GenerateToken');
 
 // Max age of the cookie
 const maxAge = 3 * 24 * 60 * 60 * 1000;
@@ -25,7 +25,7 @@ const registerUserController = async (req, res) => {
         if(!validator.isEmail(email)) return res.status(400).json({message: "Invalid email"});
 
         // Validate password
-        if(!validator.isStrongPassword(password)) return res.status(400).json({message: "Password should be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, one number, and one special character."});
+        if(!validator.isStrongPassword(password)) return res.status(400).json({message: "Password must be at least 8 characters, with one uppercase letter, one lowercase letter, one number, and one special character."});
 
         // Hashing the password
         const salt = await bcrypt.genSalt(12);
@@ -38,17 +38,12 @@ const registerUserController = async (req, res) => {
         
         // Create and send token
         const token = generateToken(savedUser._id);
-        
-        
-        res.cookie("access_token", token, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "None",
-            maxAge: maxAge
-        });
-        
 
-        res.status(200).json({message: "User registered successfully", user: savedUser._id});
+        res.status(200).json({ 
+            message: "User registered successfully", 
+            user: savedUser._id, 
+            token
+        });
 
     } catch (error) {
         console.error(error.message);
@@ -74,15 +69,13 @@ const loginUserController = async (req, res) => {
         // Create and send token
         const token = generateToken(user._id);
 
-        res.cookie("access_token", token, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "None",
-            maxAge: maxAge
+
+        res.status(200).json({ 
+            message: 'Login successful', 
+            user: user._id,
+            token
         });
-
-
-        res.status(200).json({message: 'Login successful', user: user._id});
+        
 
         
     } catch (error) {
@@ -91,7 +84,49 @@ const loginUserController = async (req, res) => {
     }
 }
 
+
+
+const addToFavoritesController = async (req, res) => {
+    const { recipeId, isFavorite } = req.body;
+
+    try {
+        const user = await UserModel.findById(req.userId);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+
+        if (isFavorite) {
+            if (!user.favoriterecipes.includes(recipeId)) {
+                user.favoriterecipes.push(recipeId);
+            }
+        } else {
+            user.favoriterecipes = user.favoriterecipes.filter(id => id.toString() !== recipeId);
+        }
+
+        await user.save();
+        res.status(200).json({ success: true, favoriterecipes: user.favoriterecipes });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to update favorite recipes' });
+    }
+}
+
+
+const getAllFavoritesController = async (req, res) => {
+    try {
+        const user = await UserModel.findById(req.userId).populate('favoriterecipes');
+        if (!user) return res.status(404).json({ error: 'User not found' });
+
+        res.status(200).json({ favoriterecipes: user.favoriterecipes });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to get favorite recipes' });
+    }
+};
+
+
 module.exports = {
     loginUserController,
-    registerUserController
+    registerUserController,
+    addToFavoritesController,
+    getAllFavoritesController
 }
