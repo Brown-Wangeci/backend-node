@@ -1,6 +1,8 @@
 // Require the necessary modules
 const express = require('express');
 const router = express.Router();
+const { verifyToken } = require('../middlewares/AuthMiddleware');
+
 
 // Require the controller functions
 const { 
@@ -13,10 +15,10 @@ const {
 
 
 router.get('/', getAllRecipes);
-router.post('/', addRecipe);
+router.post('/', verifyToken, addRecipe);
 router.get('/:id', getOneRecipe);
 router.patch('/:id', editRecipe);
-router.post('/bulk', addMultipleRecipes);
+router.post('/bulk', verifyToken, addMultipleRecipes);
 
 
 module.exports = router;

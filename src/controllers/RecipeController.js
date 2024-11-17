@@ -1,4 +1,5 @@
 const RecipeModel = require('../models/RecipeModel');
+const UserModel = require('../models/UserModel');
 
 const getAllRecipes = async (req, res) => {
     try {
@@ -21,11 +22,18 @@ const getOneRecipe = async (req, res) => {
 };
 const addRecipe = async (req, res) => {
     const recipe = req.body;
+    recipe.creator = req.userId;
+    const userId = req.userId;
 
     try {
         const createdRecipe = new RecipeModel(recipe);
-        await createdRecipe.save();
-        res.status(201).json(createdRecipe);
+        const savedRecipe = await createdRecipe.save();
+        const user = await UserModel.findById(userId);
+        user.createdrecipes.push(savedRecipe._id);
+        await user.save();
+
+        res.status(201).json(savedRecipe);
+
     } catch (error) {
         console.error(error.message);
         res.status(500).json(error.message);
@@ -48,18 +56,20 @@ const editRecipe = async (req, res) => {
 
 
 const addMultipleRecipes = async (req, res) => {
-    const recipes = req.body; // Expecting an array of recipe objects
-
-    if (!Array.isArray(recipes)) {
-        return res.status(400).json({ message: 'Input should be an array of recipes' });
-    }
-
+    const recipes = req.body;
     try {
-        const createdRecipes = await RecipeModel.insertMany(recipes);
-        res.status(201).json(createdRecipes); // Return all created recipes
+        recipes.forEach(async recipe => {
+            recipe.creator = req.userId;
+            const createdRecipe = new RecipeModel(recipe);
+            const savedRecipe = await createdRecipe.save();
+            const user = await UserModel.findById(req.userId);
+            user.createdrecipes.push(savedRecipe._id);
+            await user.save();
+        });
+        res.status(201).json({message: 'Recipes added successfully'});
     } catch (error) {
         console.error(error.message);
-        res.status(500).json({ message: 'Failed to add recipes', error: error.message });
+        res.status(500).json(error.message);
     }
 };
 

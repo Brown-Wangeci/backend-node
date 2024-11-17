@@ -89,7 +89,7 @@ const createdRecipesController = async (req, res) => {
         const user = await UserModel.findById(req.userId).populate('createdrecipes');
         if (!user) return res.status(404).json({ message: 'User not found' });
 
-        res.status(200).json({ createdrecipes: user.createdrecipes });
+        res.status(200).json( user.createdrecipes );
     }
     catch (error) {
         console.error(error);
