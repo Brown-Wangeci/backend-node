@@ -84,6 +84,18 @@ const loginUserController = async (req, res) => {
     }
 }
 
+const createdRecipesController = async (req, res) => {
+    try {
+        const user = await UserModel.findById(req.userId).populate('createdrecipes');
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        res.status(200).json({ createdrecipes: user.createdrecipes });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Failed to get created recipes' });
+    }
+};
 
 
 const addToFavoritesController = async (req, res) => {
@@ -91,7 +103,7 @@ const addToFavoritesController = async (req, res) => {
 
     try {
         const user = await UserModel.findById(req.userId);
-        if (!user) return res.status(404).json({ error: 'User not found' });
+        if (!user) return res.status(404).json({ message: 'User not found' });
 
         if (isFavorite) {
             if (!user.favoriterecipes.includes(recipeId)) {
@@ -105,7 +117,7 @@ const addToFavoritesController = async (req, res) => {
         res.status(200).json({ success: true, favoriterecipes: user.favoriterecipes });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Failed to update favorite recipes' });
+        res.status(500).json({ message: 'Failed to update favorite recipes' });
     }
 }
 
@@ -113,13 +125,13 @@ const addToFavoritesController = async (req, res) => {
 const getAllFavoritesController = async (req, res) => {
     try {
         const user = await UserModel.findById(req.userId).populate('favoriterecipes');
-        if (!user) return res.status(404).json({ error: 'User not found' });
+        if (!user) return res.status(404).json({ message: 'User not found' });
 
-        res.status(200).json({ favoriterecipes: user.favoriterecipes });
+        res.status(200).json( user.favoriterecipes );
     }
     catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Failed to get favorite recipes' });
+        res.status(500).json({ message: 'Failed to get favorite recipes' });
     }
 };
 
@@ -128,5 +140,6 @@ module.exports = {
     loginUserController,
     registerUserController,
     addToFavoritesController,
-    getAllFavoritesController
+    getAllFavoritesController,
+    createdRecipesController
 }

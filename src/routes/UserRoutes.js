@@ -8,7 +8,8 @@ const {
     loginUserController,
     registerUserController,
     addToFavoritesController,
-    getAllFavoritesController
+    getAllFavoritesController,
+    createdRecipesController
 } = require('../controllers/UserController');
 
 
@@ -16,6 +17,7 @@ router.post('/register', registerUserController);
 router.post('/login', loginUserController);
 router.post('/favorites', verifyToken, addToFavoritesController);
 router.get('/favorites', verifyToken, getAllFavoritesController);
+router.get('/myrecipes', verifyToken, createdRecipesController);
 
 
 module.exports = router;
