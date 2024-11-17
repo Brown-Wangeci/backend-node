@@ -17,7 +17,7 @@ const {
 router.get('/', getAllRecipes);
 router.post('/', verifyToken, addRecipe);
 router.get('/:id', getOneRecipe);
-router.patch('/:id', editRecipe);
+router.patch('/:id', verifyToken, editRecipe);
 router.post('/bulk', verifyToken, addMultipleRecipes);
 
 
