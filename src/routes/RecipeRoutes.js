@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const { verifyToken } = require('../middlewares/AuthMiddleware');
+const upload = require('../utils/Multer');
 
 
 // Require the controller functions
@@ -15,7 +16,7 @@ const {
 
 
 router.get('/', getAllRecipes);
-router.post('/', verifyToken, addRecipe);
+router.post('/', verifyToken, upload.single('image'), addRecipe);
 router.get('/:id', getOneRecipe);
 router.patch('/:id', verifyToken, editRecipe);
 router.post('/bulk', verifyToken, addMultipleRecipes);

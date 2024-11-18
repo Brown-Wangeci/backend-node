@@ -3,6 +3,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 dotenv.config();
+const errorHandler = require('./middlewares/ErrorHandler');
 
 const port = process.env.PORT || 3001;
 
@@ -30,6 +31,11 @@ app.use(express.urlencoded({extended: true}));
 // Routes
 app.use('/users', UserRoutes);
 app.use('/recipes', RecipeRoutes);
+
+
+
+// Error Handler
+app.use(errorHandler);
 
 
 // Listen
