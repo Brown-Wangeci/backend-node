@@ -9,10 +9,14 @@ const {
     registerUserController,
     addToFavoritesController,
     getAllFavoritesController,
-    createdRecipesController
+    createdRecipesController,
+    getAllUsersController,
+    getUserByIdController
 } = require('../controllers/UserController');
 
 
+router.get('/', verifyToken, getAllUsersController);
+router.get('/:id', verifyToken, getUserByIdController);
 router.post('/register', registerUserController);
 router.post('/login', loginUserController);
 router.post('/favorites', verifyToken, addToFavoritesController);

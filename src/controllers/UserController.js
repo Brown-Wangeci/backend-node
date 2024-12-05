@@ -3,8 +3,6 @@ const validator = require("validator");
 const UserModel = require("../models/UserModel");
 const { generateToken } = require('../utils/GenerateToken');
 
-// Max age of the cookie
-const maxAge = 3 * 24 * 60 * 60 * 1000;
 
 
 const registerUserController = async (req, res) => {
@@ -135,11 +133,38 @@ const getAllFavoritesController = async (req, res) => {
     }
 };
 
+const getAllUsersController = async (req, res) => {
+    try {
+        const users = await UserModel.find();
+        res.status(200).json(users);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Failed to get users' });
+    }
+};
+
+
+const getUserByIdController = async (req, res) => {
+    try {
+        const user = await UserModel.findById(req.params.id);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        res.status(200).json(user);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Failed to get user' });
+    }
+};
+
+
 
 module.exports = {
     loginUserController,
     registerUserController,
     addToFavoritesController,
     getAllFavoritesController,
-    createdRecipesController
+    createdRecipesController,
+    getAllUsersController,
+    getUserByIdController,
 }

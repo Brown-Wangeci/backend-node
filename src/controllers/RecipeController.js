@@ -1,8 +1,5 @@
 const RecipeModel = require('../models/RecipeModel');
 const UserModel = require('../models/UserModel');
-const upload = require('../utils/Multer');
-
-
 
 
 const getAllRecipes = async (req, res) => {
